@@ -13,7 +13,7 @@
  **
  ** You should have received a copy of the GNU General Public License
  ** along with this program; if not, write to the Free Software
- ** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ ** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
  */
 
 #ifdef HAVE_CONFIG_H
@@ -399,6 +399,7 @@ static inline int SetPktHdr (
     hdr->caplen = ((uint32_t)len <= impl->snaplen) ? (uint32_t)len : impl->snaplen;
     hdr->pktlen = len;
     hdr->flags = 0;
+    hdr->address_space_id = 0;
 
     // if nfq fails to provide a timestamp, we fall back on tod
     if ( nfq_get_timestamp(nfad, &hdr->ts) )

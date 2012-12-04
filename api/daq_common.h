@@ -15,7 +15,7 @@
 **
 ** You should have received a copy of the GNU General Public License
 ** along with this program; if not, write to the Free Software
-** Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+** Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 #ifndef _DAQ_COMMON_H
@@ -100,6 +100,7 @@ typedef struct _daq_pkthdr
     uint32_t opaque;        /* Opaque context value from the DAQ module or underlying hardware.
                                Directly related to the opaque value in FlowStats. */
     void *priv_ptr;         /* Private data pointer */
+    uint16_t address_space_id; /* Unique ID of the address space */
 } DAQ_PktHdr_t;
 
 #define DAQ_METAHDR_TYPE_SOF    0
@@ -136,6 +137,7 @@ typedef struct _flow_stats
     uint16_t vlan_tag;
     struct timeval sof_timestamp;
     struct timeval eof_timestamp;
+    uint16_t address_space_id;
 } Flow_Stats_t, *Flow_Stats_p;
 
 typedef enum {

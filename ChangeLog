@@ -1,3 +1,141 @@
+Changes in 2.0.0 Released on 2012-10-09:
+----------------------------------------
+2012-10-01 16:15  ssturges
+
+	* daq.spec: 
+	  Update DAQ spec file to reflect 2.0.0.
+
+2012-09-07 15:30  maltizer
+
+	* sfbpf/sll.h:
+	  Fix sfbpf compilation on Solaris.
+
+2012-09-06 17:56  hsugar
+
+	* api/daq.h: 
+	  Add a DAQ version for conditional compiles.
+
+2012-09-06 11:17  maltizer
+
+	* COPYING, configure.ac, api/Makefile.am, api/daq.h, api/daq_api.h,
+	  api/daq_base.c, api/daq_common.h, api/daq_mod_ops.c,
+	  os-daq-modules/daq_afpacket.c, os-daq-modules/daq_dump.c,
+	  os-daq-modules/daq_ipfw.c, os-daq-modules/daq_ipq.c,
+	  os-daq-modules/daq_nfq.c, os-daq-modules/daq_pcap.c,
+	  os-daq-modules/daq_static_modules.c,
+	  os-daq-modules/daq_static_modules.h, sfbpf/sf_bpf_printer.c:
+	  Add address_space_id fields to DAQ packet headers and flow
+	  messages.  Rev LibDAQ to major 2.  Update the address of the FSF.
+
+Changes in 1.1.1 Released on 2012-07-18:
+----------------------------------------
+2012-01-11 17:59  maltizer
+
+	* configure.ac, daq.spec, os-daq-modules/Makefile.am:
+	  Fix build when configuring with --disable-shared (don't build
+	  dynamic modules).  Add note to AFPacket section of README warning
+	  against RHEL5's kernel.  Update LibDAQ version to 1.1.1.
+
+2012-01-04 00:54  maltizer
+
+	* api/daq_common.h:
+	  Fix flag definition.
+
+2011-12-23 14:25  maltizer
+
+	* configure.ac, daq.spec, api/daq_common.h:
+	  Add the DAQ_PKT_FLAG_NOT_FORWARDING flag
+
+2011-11-04 13:28  maltizer
+
+	* configure.ac, daq.spec, api/Makefile.am:
+	  Update the SO major revision of libdaq to 1.
+
+
+Changes in 0.6.2 Released on 2011-10-06:
+----------------------------------------
+2011-09-21 16:22  rcombs
+
+	* configure.ac, os-daq-modules/Makefile.am:
+	  fix dnet vs dumbnet in a more righteous way
+
+2011-07-18 10:05  rdempster
+
+	* sfbpf/Makefile.am:
+	  Remove GNU Make specific declarations and replace with srcdir
+	  literals.
+
+Changes in 0.6 Released on 2011-08-23:
+--------------------------------------
+
+2011-06-08 17:26  rcombs
+
+	* daq.dsp, daq.spec, api/daq.h, api/daq_common.h:
+	  convert spec file to unix flavor; fix windows build
+
+2011-05-27 12:07  rdempster
+
+	* configure.ac, os-daq-modules/daq-modules-config.in:
+	  Fix up some typos and shell errors.
+
+2011-05-13 15:50  rdempster
+
+	* configure.ac, daq.spec, api/daq.h, api/daq_common.h,
+	  m4/ax_cflags_gcc_option.m4, os-daq-modules/Makefile.am,
+	  os-daq-modules/daq-modules-config.in,
+	  os-daq-modules/daq_afpacket.c, os-daq-modules/daq_dump.c,
+	  os-daq-modules/daq_ipfw.c, os-daq-modules/daq_ipq.c,
+	  os-daq-modules/daq_nfq.c, os-daq-modules/daq_pcap.c,
+	  sfbpf/Makefile.am, sfbpf/sf-redefines.h, sfbpf/sf_bpf_filter.c,
+	  sfbpf/sf_bpf_printer.c, sfbpf/sf_gencode.c, sfbpf/sfbpf-int.h: 
+	  Update daq to gracefully handle dnet as dumbnet on ubuntu.
+	  Make libpcap export pcap_version, so that it works with the daq
+	  configure script.
+
+2011-05-13 15:46  rcombs
+
+	* os-daq-modules/daq_nfq.c:
+	  convert sec to ms; disable ENOBUFS
+
+2011-02-15 17:59  maltizer
+
+	* os-daq-modules/daq_pcap.c:
+	  Fix typo in pcap DAQ module's buffer_size variable parsing.
+
+2010-12-08 11:03  rcombs
+
+	* os-daq-modules/daq_ipfw.c:
+	  use ipv4 instead of raw
+
+2010-12-08 10:53  rcombs
+
+	* README, os-daq-modules/daq_ipq.c, os-daq-modules/daq_nfq.c:
+	  discriminate between ip4 and ip6 raw packets
+
+2010-12-08 10:30  rcombs
+
+	* os-daq-modules/Makefile.am: Bugs Fixed: 81786 Change description:
+	  add missing additional libraries; remove sort which isn't
+	  supported on OpenBSD 4.7 and up.  Test case description:
+	  Documentation: Set Status Whiteboard:
+
+2010-11-01 15:33  maltizer
+
+	* os-daq-modules/daq_afpacket.c: Bugs Fixed: 80711 Change
+	  description: Be more defensive against empty interface strings
+	  being passed in.  Test case description: Documentation: Set
+	  Status Whiteboard:
+
+2010-10-21 12:15  rcombs
+
+	* os-daq-modules/daq_dump.c: 
+	  fix msg buf size
+
+2010-09-24 13:22  bbantwal
+
+	* m4/sf.m4: check for pcap version 1.0.0 and above while building
+	  daq
+
 Changes in 0.1 Released on 2010-09-03:
 -------------------------------------
 
@@ -87,8 +225,7 @@ Changes in 0.1 Released on 2010-07-27:
 	* os-daq-modules/daq_pcap.c:
 	  Make the PCAP DAQ module handle pcap_stats()'s 32-bit values
 	  wrapping.  (This is done the old Snort way because I don't feel
-	  like messing with endianness vs. unions.)  Update the NFE DAQ
-	  module to return 0 from daq_acquire() when the read times out.
+	  like messing with endianness vs. unions.)
 
 2010-06-10 15:35  ssturges
 
