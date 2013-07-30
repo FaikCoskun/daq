@@ -1,5 +1,5 @@
 /*
- ** Portions Copyright (C) 1998-2010 Sourcefire, Inc.
+ ** Portions Copyright (C) 1998-2013 Sourcefire, Inc.
  **
  ** This program is free software; you can redistribute it and/or modify
  ** it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@
 #include "daq_api.h"
 #include "sfbpf.h"
 
-#define DAQ_MOD_VERSION  6
+#define DAQ_MOD_VERSION  7
 
 #define DAQ_NAME "nfq"
 #define DAQ_TYPE (DAQ_TYPE_INTF_CAPABLE | DAQ_TYPE_INLINE_CAPABLE | \
@@ -453,6 +453,10 @@ static int daq_nfq_callback(
     else
     {
         verdict = impl->user_func(impl->user_data, &hdr, pkt);
+
+        if ( verdict >= MAX_DAQ_VERDICT )
+            verdict = DAQ_VERDICT_BLOCK;
+
         impl->stats.verdicts[verdict]++;
         impl->stats.packets_received++;
     }

@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2010 Sourcefire, Inc.
+** Copyright (C) 2010-2013 Sourcefire, Inc.
 ** Author: Michael R. Altizer <maltizer@sourcefire.com>
 **
 ** This program is free software; you can redistribute it and/or modify
@@ -79,9 +79,12 @@
 #define DAQ_ERROR_EXISTS    -8  /* Argument or device already exists */
 #define DAQ_READFILE_EOF    -42 /* Hit the end of the file being read! */
 
-#define DAQ_PKT_FLAG_HW_TCP_CS_GOOD  0x1
-#define DAQ_PKT_FLAG_OPAQUE_IS_VALID 0x2
-#define DAQ_PKT_FLAG_NOT_FORWARDING  0x4
+#define DAQ_PKT_FLAG_HW_TCP_CS_GOOD     0x1 /* The DAQ module reports that the checksum for this packet is good. */
+#define DAQ_PKT_FLAG_OPAQUE_IS_VALID    0x2 /* The DAQ module actively set the opaque value in the DAQ packet header. */
+#define DAQ_PKT_FLAG_NOT_FORWARDING     0x4 /* The DAQ module will not be actively forwarding this packet
+                                               regardless of the verdict (e.g, Passive or Inline Tap interfaces). */
+#define DAQ_PKT_FLAG_PRE_ROUTING        0x8 /* The packet is being routed via us but packet modifications
+                                                (MAC and TTL) have not yet been made. */
 
 /* The DAQ packet header structure passed to DAQ Analysis Functions.
  * This should NEVER be modified by user applications. */

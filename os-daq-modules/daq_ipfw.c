@@ -1,5 +1,5 @@
 /*
- ** Portions Copyright (C) 1998-2010 Sourcefire, Inc.
+ ** Portions Copyright (C) 1998-2013 Sourcefire, Inc.
  **
  ** This program is free software; you can redistribute it and/or modify
  ** it under the terms of the GNU General Public License as published by
@@ -40,7 +40,7 @@
 #define IPPROTO_DIVERT 254
 #endif
 
-#define DAQ_MOD_VERSION 2
+#define DAQ_MOD_VERSION 3
 
 #define DAQ_NAME "ipfw"
 #define DAQ_TYPE (DAQ_TYPE_INTF_CAPABLE | DAQ_TYPE_INLINE_CAPABLE | \
@@ -256,7 +256,7 @@ static int ipfw_daq_inject (
     int reverse)
 {
     IpfwImpl* impl = (IpfwImpl*)handle;
-    int status = ipfw_daq_forward(impl, hdr, impl->buf, hdr->pktlen, 0);
+    int status = ipfw_daq_forward(impl, hdr, buf, len, 0);
 
     if ( status == DAQ_SUCCESS )
         impl->stats.packets_injected++;
@@ -348,6 +348,10 @@ static int ipfw_daq_acquire (
             else
             {
                 verdict = callback(NULL, &hdr, impl->buf);
+
+                if ( verdict >= MAX_DAQ_VERDICT )
+                    verdict = DAQ_VERDICT_BLOCK;
+
                 impl->stats.verdicts[verdict]++;
                 impl->stats.packets_received++;
             }

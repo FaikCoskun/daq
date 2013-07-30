@@ -1,6 +1,6 @@
 /****************************************************************************
  *
- * Copyright (C) 2007-2010 Sourcefire, Inc.
+ * Copyright (C) 2007-2013 Sourcefire, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License Version 2 as
@@ -29,7 +29,7 @@
 #include "daq.h"
 #include "daq_api.h"
 
-#define DAQ_MOD_VERSION 1
+#define DAQ_MOD_VERSION 2
 
 #define DAQ_NAME "dump"
 #define DAQ_TYPE (DAQ_TYPE_FILE_CAPABLE | DAQ_TYPE_INTF_CAPABLE | \
@@ -158,7 +158,7 @@ static DAQ_Verdict daq_dump_capture (
     DumpImpl* impl = (DumpImpl*)user;
     DAQ_Verdict verdict = impl->callback(impl->user, hdr, pkt);
 
-    if ( verdict > MAX_DAQ_VERDICT )
+    if ( verdict >= MAX_DAQ_VERDICT )
         verdict = DAQ_VERDICT_BLOCK;
 
     impl->stats.verdicts[verdict]++;

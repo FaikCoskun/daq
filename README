@@ -289,6 +289,15 @@ kernel configuration file:
 (The file in this case was: /usr/src/sys/i386/conf/GENERIC; which is platform
 dependent.)
 
+You may need to also set these to use the loadable kernel modules:
+
+/etc/rc.conf:
+firewall_enable="YES"
+
+/boot/loader.conf:
+ipfw_load="YES"
+ipdivert_load="YES"
+
 $ dmesg | grep ipfw
 ipfw2 (+ipv6) initialized, divert loadable, nat loadable, rule-based
 forwarding disabled, default to deny, logging disabled
