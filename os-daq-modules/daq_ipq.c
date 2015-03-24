@@ -347,6 +347,7 @@ static int ipq_daq_acquire (
 
             switch ( verdict ) {
             case DAQ_VERDICT_BLOCK:
+            case DAQ_VERDICT_RETRY:
             case DAQ_VERDICT_BLACKLIST:
                 status = ipq_set_verdict(
                     impl->ipqh, ipqm->packet_id, NF_DROP, 0, NULL);

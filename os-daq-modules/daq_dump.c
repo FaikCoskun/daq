@@ -149,8 +149,8 @@ static void dump_daq_shutdown (void* handle)
 
 //-------------------------------------------------------------------------
 // packet processing functions:
-// forward all but blocks and blacklists:
-static const int s_fwd[MAX_DAQ_VERDICT] = { 1, 0, 1, 1, 0, 1 };
+// forward all but blocks, retries and blacklists:
+static const int s_fwd[MAX_DAQ_VERDICT] = { 1, 0, 1, 1, 0, 1, 0 };
 
 static DAQ_Verdict daq_dump_capture (
     void* user, const DAQ_PktHdr_t* hdr, const uint8_t* pkt)

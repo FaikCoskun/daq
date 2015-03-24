@@ -1,5 +1,13 @@
 /* config.h.in.  Generated from configure.ac by autoheader.  */
 
+/* Define to 1 if you have the declaration of `PACKET_TX_RING', and to 0 if
+   you don't. */
+#undef HAVE_DECL_PACKET_TX_RING
+
+/* Define to 1 if you have the declaration of `TPACKET2_HDRLEN', and to 0 if
+   you don't. */
+#undef HAVE_DECL_TPACKET2_HDRLEN
+
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 

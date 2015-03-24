@@ -1,4 +1,5 @@
 /*
+** Copyright (C) 2014 Cisco and/or its affiliates. All rights reserved.
 ** Copyright (C) 2010-2013 Sourcefire, Inc.
 ** Author: Michael R. Altizer <maltizer@sourcefire.com>
 **
@@ -367,4 +368,18 @@ DAQ_LINKAGE uint32_t daq_get_type(const DAQ_Module_t *module)
         return DAQ_ERROR_NOMOD;
 
     return module->type;
+}
+
+DAQ_LINKAGE int daq_dp_add_dc(const DAQ_Module_t *module, void *handle, const DAQ_PktHdr_t *hdr, DAQ_DP_key_t *dp_key, const uint8_t *packet_data)
+{
+    if (!module)
+        return DAQ_ERROR_NOMOD;
+
+    if (!handle)
+        return DAQ_ERROR_NOCTX;
+
+    if (!module->dp_add_dc)
+        return DAQ_SUCCESS;
+
+    return module->dp_add_dc(handle, hdr, dp_key, packet_data);
 }

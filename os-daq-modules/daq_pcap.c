@@ -1,4 +1,5 @@
 /*
+** Copyright (C) 2014 Cisco and/or its affiliates. All rights reserved.
 ** Copyright (C) 2010-2013 Sourcefire, Inc.
 ** Author: Michael R. Altizer <maltizer@sourcefire.com>
 **
@@ -377,7 +378,7 @@ static int pcap_daq_acquire(
     while (context->packets < cnt || cnt <= 0)
     {
         ret = pcap_dispatch(
-            context->handle, cnt-context->packets, pcap_process_loop, (void *) context);
+            context->handle, (cnt <= 0) ? -1 : cnt-context->packets, pcap_process_loop, (void *) context);
         if (ret == -1)
         {
             DPE(context->errbuf, "%s", pcap_geterr(context->handle));

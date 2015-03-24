@@ -23,6 +23,7 @@
 
 #include <stdint.h>
 #include <unistd.h>
+#include <netinet/in.h>
 #ifndef WIN32
 #include <sys/time.h>
 #else
@@ -77,6 +78,7 @@
 #define DAQ_ERROR_NOCTX     -6  /* No context specified error */
 #define DAQ_ERROR_INVAL     -7  /* Invalid argument/request error */
 #define DAQ_ERROR_EXISTS    -8  /* Argument or device already exists */
+#define DAQ_ERROR_AGAIN     -9  /* Try again */
 #define DAQ_READFILE_EOF    -42 /* Hit the end of the file being read! */
 
 #define DAQ_PKT_FLAG_HW_TCP_CS_GOOD     0x1 /* The DAQ module reports that the checksum for this packet is good. */
@@ -85,6 +87,10 @@
                                                regardless of the verdict (e.g, Passive or Inline Tap interfaces). */
 #define DAQ_PKT_FLAG_PRE_ROUTING        0x8 /* The packet is being routed via us but packet modifications
                                                 (MAC and TTL) have not yet been made. */
+#define DAQ_PKT_FLAG_SSL_DETECTED	0x10 /* Packet is ssl client hello */
+#define DAQ_PKT_FLAG_SSL_SHELLO	    0x20 /* Packet is ssl server hello */
+#define DAQ_PKT_FLAG_SSL_SERVER_KEYX	0x40 /* Packet is ssl server keyx */
+#define DAQ_PKT_FLAG_SSL_CLIENT_KEYX	0x80 /* Packet is ssl client keyx */
 
 /* The DAQ packet header structure passed to DAQ Analysis Functions.
  * This should NEVER be modified by user applications. */
@@ -103,11 +109,14 @@ typedef struct _daq_pkthdr
     uint32_t opaque;        /* Opaque context value from the DAQ module or underlying hardware.
                                Directly related to the opaque value in FlowStats. */
     void *priv_ptr;         /* Private data pointer */
+    uint32_t flow_id;
     uint16_t address_space_id; /* Unique ID of the address space */
 } DAQ_PktHdr_t;
 
-#define DAQ_METAHDR_TYPE_SOF    0
-#define DAQ_METAHDR_TYPE_EOF    1
+#define DAQ_METAHDR_TYPE_SOF        0
+#define DAQ_METAHDR_TYPE_EOF        1
+#define DAQ_METAHDR_TYPE_VPN_LOGIN  2
+#define DAQ_METAHDR_TYPE_VPN_LOGOUT 3
 typedef struct _daq_metahdr
 {
     int type;               /* Type */
@@ -144,12 +153,39 @@ typedef struct _flow_stats
 } Flow_Stats_t, *Flow_Stats_p;
 
 typedef enum {
+    NP_IDFW_VPN_SESSION_TYPE_UNKNOWN = 0,
+    NP_IDFW_VPN_SESSION_TYPE_RA_IKEV1 = 1,
+    NP_IDFW_VPN_SESSION_TYPE_RA_IKEV2 = 2,
+    NP_IDFW_VPN_SESSION_TYPE_RA_SSLVPN = 3,
+    NP_IDFW_VPN_SESSION_TYPE_RA_SSLVPN_CLIENTLESS = 4,
+    NP_IDFW_VPN_SESSION_TYPE_LAN2LAN_IKEV1 = 5,
+    NP_IDFW_VPN_SESSION_TYPE_LAN2LAN_IKEV2 = 6,
+    NP_IDFW_VPN_SESSION_TYPE_MAX,
+} np_idfw_vpn_session_type_t;
+
+#define DAQ_VPN_INFO_MAX_USER_NAME_LEN  256
+typedef struct _daq_vpn_info
+{
+    uint8_t ip[16];
+    uint32_t id;
+} DAQ_VPN_Info_t, *DAQ_VPN_Info_p;
+
+typedef struct _daq_vpn_login_info
+{
+    DAQ_VPN_Info_t info;
+    uint32_t os;
+    uint32_t type;
+    char user[DAQ_VPN_INFO_MAX_USER_NAME_LEN + 1];
+} DAQ_VPN_Login_Info_t, *DAQ_VPN_Login_Info_p;
+
+typedef enum {
     DAQ_VERDICT_PASS,       /* Pass the packet. */
     DAQ_VERDICT_BLOCK,      /* Block the packet. */
     DAQ_VERDICT_REPLACE,    /* Pass a packet that has been modified in-place. (No resizing allowed!) */
     DAQ_VERDICT_WHITELIST,  /* Pass the packet and fastpath all future packets in the same flow systemwide. */
     DAQ_VERDICT_BLACKLIST,  /* Block the packet and block all future packets in the same flow systemwide. */
     DAQ_VERDICT_IGNORE,     /* Pass the packet and fastpath all future packets in the same flow for this application. */
+    DAQ_VERDICT_RETRY,     /* Hold the packet briefly and resend it to Snort while Snort waits for external response. Drop any new packets received on that flow while holding before sending them to Snort. */
     MAX_DAQ_VERDICT
 } DAQ_Verdict;
 
@@ -197,6 +233,29 @@ typedef struct _daq_stats
     uint64_t verdicts[MAX_DAQ_VERDICT]; /* Counters of packets handled per-verdict. */
 } DAQ_Stats_t;
 
+#define DAQ_DP_TUNNEL_TYPE_NON_TUNNEL 0
+#define DAQ_DP_TUNNEL_TYPE_GTP_TUNNEL 1
+#define DAQ_DP_TUNNEL_TYPE_OTHER_TUNNEL 2
+
+typedef struct _DAQ_DP_key_t {
+    uint32_t af;                /* AF_INET or AF_INET6 */
+    union {
+        struct in_addr src_ip4;
+        struct in6_addr src_ip6;
+    } sa;
+    union {
+        struct in_addr dst_ip4;
+        struct in6_addr dst_ip6;
+    } da;
+    uint8_t protocol;           /* TCP or UDP (IPPROTO_TCP or IPPROTO_UDP )*/
+    uint16_t src_port;          /* TCP/UDP source port */
+    uint16_t dst_port;          /* TCP/UDP destination port */
+    uint16_t address_space_id;  /* Address Space ID */
+    uint16_t tunnel_type;       /* Tunnel type */
+    uint16_t vlan_id;           /* VLAN ID */
+    uint16_t vlan_cnots;
+} DAQ_DP_key_t;
+
 /* DAQ module type flags */
 #define DAQ_TYPE_FILE_CAPABLE   0x01    /* can read from a file */
 #define DAQ_TYPE_INTF_CAPABLE   0x02    /* can open live interfaces */
@@ -216,6 +275,7 @@ typedef struct _daq_stats
 #define DAQ_CAPA_BPF            0x080   /* can call set_filter() to establish a BPF */
 #define DAQ_CAPA_DEVICE_INDEX   0x100   /* can consistently fill the device_index field in DAQ_PktHdr */
 #define DAQ_CAPA_INJECT_RAW     0x200   /* injection of raw packets (no layer-2 headers) */
+#define DAQ_CAPA_RETRY          0x400   /* resend packet to Snort after brief delay. */
 
 typedef struct _daq_module DAQ_Module_t;
 

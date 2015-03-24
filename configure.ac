@@ -2,8 +2,8 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.62)
-AC_INIT([daq], [2.0.1], [snort-team@sourcefire.com])
-AM_INIT_AUTOMAKE([daq], [2.0.1])
+AC_INIT([daq], [2.0.4], [snort-team@sourcefire.com])
+AM_INIT_AUTOMAKE([daq], [2.0.4])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_SRCDIR([sfbpf/gencode.h])
 AC_CONFIG_HEADERS([config.h])
@@ -94,6 +94,14 @@ else
     DNET_LDFLAGS="`dnet-config --libs 2>/dev/null`"
 fi
 
+AC_ARG_WITH(netmap_includes,
+            [  --with-netmap-includes=DIR    netmap include directory],
+            [with_netmap_includes="$withval"], [with_netmap_includes="no"])
+
+if test "x$with_netmap_includes" != "xno"; then
+    CPPFLAGS="${CPPFLAGS} -I${with_netmap_includes}"
+fi
+
 DEFAULT_ENABLE=yes
 
 # Modules configuration
@@ -113,6 +121,7 @@ AC_ARG_ENABLE(afpacket-module,
               [enable_afpacket_module="$enableval"], [enable_afpacket_module="$DEFAULT_ENABLE"])
 if test "$enable_afpacket_module" = yes; then
     AC_CHECK_HEADERS([linux/if_ether.h linux/if_packet.h], [], [enable_afpacket_module=no])
+    AC_CHECK_DECLS([TPACKET2_HDRLEN, PACKET_TX_RING], [], [enable_afpacket_module=no], [[#include <linux/if_packet.h>]])
     if test "$enable_afpacket_module" = yes; then
         STATIC_LIBS="${STATIC_LIBS} -lsfbpf"
     fi
@@ -185,6 +194,18 @@ if test "$enable_pcap_module" = yes; then
     fi
 fi
 AM_CONDITIONAL([BUILD_PCAP_MODULE], [test "$enable_pcap_module" = yes])
+
+# netmap Module
+AC_ARG_ENABLE(netmap-module,
+              AC_HELP_STRING([--disable-netmap-module],[don't build the bundled netmap module]),
+              [enable_netmap_module="$enableval"], [enable_netmap_module="$DEFAULT_ENABLE"])
+if test "$enable_netmap_module" = yes; then
+    AC_CHECK_HEADER([net/netmap_user.h], [], [enable_netmap_module=no])
+    if test "$enable_netmap_module" = yes; then
+        STATIC_LIBS="${STATIC_LIBS} -lsfbpf"
+    fi
+fi
+AM_CONDITIONAL([BUILD_NETMAP_MODULE], [test "$enable_netmap_module" = yes])
 
 if test "$enable_ipq_module" = yes -o "$enable_nfq_module" = yes ; then
     AC_CHECK_HEADERS(dnet.h,,DNET_H="no")
@@ -275,4 +296,5 @@ echo "Build IPFW DAQ module...... : $enable_ipfw_module"
 echo "Build IPQ DAQ module....... : $enable_ipq_module"
 echo "Build NFQ DAQ module....... : $enable_nfq_module"
 echo "Build PCAP DAQ module...... : $enable_pcap_module"
+echo "Build netmap DAQ module...... : $enable_netmap_module"
 echo

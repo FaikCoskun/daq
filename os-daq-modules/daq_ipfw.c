@@ -283,8 +283,8 @@ static void SetPktHdr(DAQ_PktHdr_t* phdr, ssize_t len)
 
 //-------------------------------------------------------------------------
 
-// forward all but drops and blacklists:
-static const int s_fwd[MAX_DAQ_VERDICT] = { 1, 0, 1, 1, 0, 1 };
+// forward all but drops, retries and blacklists:
+static const int s_fwd[MAX_DAQ_VERDICT] = { 1, 0, 1, 1, 0, 1, 0 };
 
 static int ipfw_daq_acquire (
     void* handle, int cnt, DAQ_Analysis_Func_t callback, DAQ_Meta_Func_t metaback, void* user)
@@ -310,6 +310,8 @@ static int ipfw_daq_acquire (
 
         if ( select(impl->sock+1, &fdset, NULL, NULL, &tv) < 0 )
         {
+            if ( errno == EINTR )
+                break;
             DPE(impl->error, "%s: can't select divert socket (%s)\n",
                 __FUNCTION__, strerror(errno));
             return DAQ_ERROR;

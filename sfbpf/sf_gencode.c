@@ -3,6 +3,7 @@
  * Copyright (c) 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998
  *	The Regents of the University of California.  All rights reserved.
  *
+ * Some portions Copyright (C) 2014 Cisco and/or its affiliates. All rights reserved.
  * Some portions Copyright (C) 2010-2013 Sourcefire, Inc.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -23,7 +24,7 @@
  */
 #ifndef lint
 static const char rcsid[] =
-    "@(#) $Header$ (LBL)";
+    "@(#) $Header: /usr/cvsroot/sfeng/ims/src/libraries/daq/daq/sfbpf/sf_gencode.c,v 1.6 2014/06/10 13:38:55 cwaxman Exp $ (LBL)";
 #endif
 
 #ifdef HAVE_CONFIG_H

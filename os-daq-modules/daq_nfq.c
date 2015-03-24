@@ -415,8 +415,8 @@ static inline int SetPktHdr (
 
 //-------------------------------------------------------------------------
 
-// forward all but blocks and blacklists:
-static const int s_fwd[MAX_DAQ_VERDICT] = { 1, 0, 1, 1, 0, 1 };
+// forward all but blocks, retries and blacklists:
+static const int s_fwd[MAX_DAQ_VERDICT] = { 1, 0, 1, 1, 0, 1, 0 };
 
 static int daq_nfq_callback(
     struct nfq_q_handle* qh,

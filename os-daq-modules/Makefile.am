@@ -86,6 +86,18 @@ endif
     libdaq_static_modules_la_CFLAGS += -DBUILD_NFQ_MODULE
 endif
 
+if BUILD_NETMAP_MODULE
+if BUILD_SHARED_MODULES
+    pkglib_LTLIBRARIES += daq_netmap.la
+    daq_netmap_la_SOURCES = daq_netmap.c
+    daq_netmap_la_CFLAGS = -DBUILDING_SO
+    daq_netmap_la_LDFLAGS = -module -export-dynamic -avoid-version -shared @XCCFLAGS@
+    daq_netmap_la_LIBADD = $(top_builddir)/sfbpf/libsfbpf.la
+endif
+    libdaq_static_modules_la_SOURCES += daq_netmap.c
+    libdaq_static_modules_la_CFLAGS += -DBUILD_NETMAP_MODULE
+endif
+
 INCLUDES = -I$(top_srcdir)/api -I$(top_srcdir)/sfbpf -I$(top_builddir)/sfbpf
 
 EXTRA_DIST = daq-modules-config.in

@@ -1,4 +1,5 @@
 /*
+** Copyright (C) 2014 Cisco and/or its affiliates. All rights reserved.
 ** Copyright (C) 2010-2013 Sourcefire, Inc.
 ** Author: Michael R. Altizer <maltizer@sourcefire.com>
 **
@@ -111,7 +112,8 @@ static const char *daq_verdict_strings[MAX_DAQ_VERDICT] = {
     "replace",      // DAQ_VERDICT_REPLACE
     "whitelist",    // DAQ_VERDICT_WHITELIST
     "blacklist",    // DAQ_VERDICT_BLACKLIST
-    "ignore"        // DAQ_VERDICT_IGNORE
+    "ignore",       // DAQ_VERDICT_IGNORE
+    "retry"         // DAQ_VERDICT_RETRY
 };
 
 static const char *daq_mode_strings[MAX_DAQ_MODE] = {

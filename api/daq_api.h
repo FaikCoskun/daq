@@ -1,4 +1,5 @@
 /*
+** Copyright (C) 2014 Cisco and/or its affiliates. All rights reserved.
 ** Copyright (C) 2010-2013 Sourcefire, Inc.
 ** Author: Michael R. Altizer <maltizer@sourcefire.com>
 **
@@ -87,6 +88,15 @@ struct _daq_module
     int (*hup_apply) (void *handle, void *new_config, void **old_config);
     /* Destroy old configuration */
     int (*hup_post) (void *handle, void *old_config);
+    /** DAQ API to program a FST/EFT entry for dynamic protocol data channel
+     *
+     * @param [in] handle      NFE context
+     * @param [in] hdr         DAQ packet header of the control channel packet.
+     * @param [in] dp_key      Key structure of the data channel flow
+     * @param [in] packet_data Packet of the companion control channel packet.
+     * @return                 Error code of the API. 0 - success.
+     */
+     int (*dp_add_dc) (void *handle, const DAQ_PktHdr_t * hdr, DAQ_DP_key_t * dp_key, const uint8_t * packet_data);
 };
 
 #define DAQ_API_VERSION    0x00010002
