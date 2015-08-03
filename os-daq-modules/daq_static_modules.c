@@ -1,5 +1,5 @@
 /*
-** Copyright (C) 2014-2015 Cisco and/or its affiliates. All rights reserved.
+** Copyright (C) 2014 Cisco and/or its affiliates. All rights reserved.
 ** Copyright (C) 2010-2013 Sourcefire, Inc.
 ** Author: Michael R. Altizer <maltizer@sourcefire.com>
 **
@@ -40,6 +40,9 @@ const DAQ_Module_t *static_modules[] =
 #endif
 #ifdef BUILD_PCAP_MODULE
     &pcap_daq_module_data,
+#endif
+#ifdef BUILD_NETMAP_MODULE
+    &netmap_daq_module_data,
 #endif
 };
 const int num_static_modules = sizeof(static_modules) / sizeof(static_modules[0]);

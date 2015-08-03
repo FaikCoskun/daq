@@ -1,5 +1,4 @@
 /*
-** Copyright (C) 2014-2015 Cisco and/or its affiliates. All rights reserved.
 ** Copyright (C) 2010-2013 Sourcefire, Inc.
 ** Author: Michael R. Altizer <maltizer@sourcefire.com>
 **
@@ -24,14 +23,13 @@
 
 #include <stdint.h>
 #include <unistd.h>
-#ifndef WIN32
 #include <netinet/in.h>
+#ifndef WIN32
 #include <sys/time.h>
 #else
 /* for struct timeavl */
 #include <winsock2.h>
 #include <windows.h>
-#include <ws2tcpip.h>
 #endif
 
 #ifndef DAQ_SO_PUBLIC
